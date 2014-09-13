@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 # This retrieves a single key from memcached.
 # This is meant as a utility method, rather than a production tool.
@@ -42,7 +42,7 @@ memcached_get () {
     # Sample filtered output:
     # hellohello
 
-    echo -n "get ${key}\r\n" | nc -q 1 "${host}" "${port}" | sed -e '1 d' -e '$ d'
+    printf "get %s\r\n" "${key}" | nc -q 1 "${host}" "${port}" | sed -e '1 d' -e '$ d'
 }
 
 HOST=127.0.0.1
@@ -76,14 +76,16 @@ do
     esac
 done
 
+
 # This bit of fiddling allows raw arguments specified on the command line to be used as a key
 # currently this just takes the first argument after the ones processed by getopts
-if [ "${KEY}" = "" ]
+if [ -z "${KEY}" ]
 then
-    if [ "${@[$OPTIND]}" != "" ]
+    ARGS=("$@")
+    KEY=${ARGS[$(($OPTIND - 1))]}
+
+    if [ -z "${KEY}" ]
     then
-        KEY=${@[$OPTIND]}
-    else
         error "You must specify a key to retrieve"
     fi
 fi
