@@ -17,23 +17,31 @@ folder to your $PATH.
 Each command will connect to localhost port 11211 by default. You can change
 this with the options _-H_ and _-P_.
 
-List cache content:
-
-        ➜ mc-list
-        0 items
-
-        ➜ mc-list -H memcache.example.com -P 11212
-        0 items
-
 Add key:
 
         ➜ echo hello | mc-set KEY
+        STORED
+
+        ➜ echo hello | mc-set -H memcache.example.com -P 1234 KEY
         STORED
 
 Read key:
 
         ➜ mc-get KEY
         hello
+
+        ➜ mc-get -H memcache.example.com -P 1234 KEY
+        hello
+
+List cache content:
+
+        ➜ mc-list
+        KEY
+        1 items
+
+        ➜ mc-list -H memcache.example.com -P 1234
+        KEY
+        1 items
 
 ### OPTIONS
 
