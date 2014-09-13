@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 # This lists the keys available in memcached.
 # This is meant as a utility method, rather than a production tool.
@@ -47,7 +47,7 @@ memcached_item_stats () {
 
     # -i had a problem with the quantity of output i guess, it would cut off after about the third chunk
     # -q works better
-    echo -n "stats items\r\n" | nc -q 1 "${host}" "${port}" | sed -n '/:number/p' | sed -e 's/STAT items://' -e 's/:number//'
+    printf "stats items\r\n" | nc -q 1 "${host}" "${port}" | sed -n '/:number/p' | sed -e 's/STAT items://' -e 's/:number//'
 }
 
 # Pipe the item stats into this
@@ -58,10 +58,10 @@ memcached_cachedump () {
 
     while read cache number
     do
-        echo -n "stats cachedump ${cache} ${number}\r\n" | nc -q 1 "${host}" "${port}" | sed -e '$ d' | cut -d' ' -f 2
-        count=$(perl -e "print ${count} + ${number}")
+        printf "stats cachedump %s %s\r\n" "${cache}" "${number}" | nc -q 1 "${host}" "${port}" | sed -e '$ d' | cut -d' ' -f 2
+        count=$(perl -e "print ${count} + ${number}") # number has a newline in it so let and $(()) barf on it.
     done
-    echo "${count} items"
+    printf "%s items\n" ${count}
 }
 
 HOST=127.0.0.1

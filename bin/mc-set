@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 # This sets a single key on memcached.
 # This is meant as a utility method, rather than a production tool.
@@ -32,7 +32,7 @@ memcached_set () {
     local data=$4
     local length=${#data}
 
-    echo -n "set ${key} 0 0 ${length}\r\n${data}\r\n" | nc -q 1 "${host}" "${port}"
+    printf "set %s 0 0 %s\r\n%s\r\n" "${key}" "${length}" "${data}" | nc -q 1 "${host}" "${port}"
 }
 
 HOST=127.0.0.1
@@ -68,12 +68,13 @@ done
 
 # This bit of fiddling allows raw arguments specified on the command line to be used as a key
 # currently this just takes the first argument after the ones processed by getopts
-if [ "${KEY}" = "" ]
+if [ -z "${KEY}" ]
 then
-    if [ "${@[$OPTIND]}" != "" ]
+    ARGS=("$@")
+    KEY=${ARGS[$(($OPTIND - 1))]}
+
+    if [ -z "${KEY}" ]
     then
-        KEY=${@[$OPTIND]}
-    else
         error "You must specify a key to set"
     fi
 fi
